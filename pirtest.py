@@ -9,4 +9,5 @@ while True:
     print("Motion detected!")
     pir.wait_for_no_motion()
 
+
     print("no motion detected.")
