@@ -1,4 +1,4 @@
-from gpizero import MotionSensor
+from gpiozero import MotionSensor
 
 pir = MotionSensor(12)
 
