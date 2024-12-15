@@ -33,7 +33,7 @@ try:
                 motion_detected = True
             last_motion_time = time.time()
         else:
-            if motion_detected and (time.time() - last_motion_time > 30):
+            if motion_detected and (time.time() - last_motion_time > 5):
                 print("No Motion for 30 seconds, turning off.")
                 turnOff()  # Call the function to turn off the device
                 motion_detected = False
