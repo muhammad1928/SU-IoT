@@ -5,9 +5,9 @@ pir = MotionSensor(12, hold_time=2)  # Define the GPIO pin number for the PIR se
 while True:
     print("Scanning for motions...")
     if pir.motion_detected:
-        print("Motion detected!")
+        print("Motion detected! Lamp is on.")
     else:
-        print("No motion detected.")
+        print("No motion detected. Lamp is off.")
         
     
 
