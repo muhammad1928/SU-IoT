@@ -10,17 +10,26 @@ pir = MotionSensor(12)
 
 # Global variable to store the current background color
 background_color = "black"  # Start with a dark color
+def light_on(): 
+    global background_color
+    background_color = "white"  # Light color when motion is detected
+
+def light_off():
+    global background_color
+    background_color = "black"  # Dark color when no motion is detected
 
 def monitor_motion():
     """Thread function to monitor motion and update the background color."""
-    global background_color
+    
     while True:
         if pir.motion_detected:
             print("Motion detected! Switching to light color.")
-            background_color = "white"  # Light color when motion is detected
+            light_on()
+            # pir.wait_for_no_motion()  # Wait for no motion
         else:
             print("No motion detected. Switching to dark color.")
-            background_color = "black"  # Dark color when no motion is detected
+            light_off()
+            # pir.wait_for_motion()
         time.sleep(0.1)  # Small delay to reduce rapid updates
 
 @app.route("/")

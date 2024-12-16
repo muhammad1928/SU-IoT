@@ -1,27 +1,30 @@
-# from gpiozero import MotionSensor
-
-# pir = MotionSensor(12)
-
-# while True:
-#     print("Scanning for motions...")
-#     pir.wait_for_motion()
-
-#     print("Motion detected!")
-#     pir.wait_for_no_motion()
-#     print("no motion detected.")
-
-
 from gpiozero import MotionSensor
-import time
 
 pir = MotionSensor(12)
 
 while True:
-    print("Scanning for motion...")
-    pir.when_motion = print("Motion detected! lamp is on")
+    print("Scanning for motions...")
+    pir.wait_for_motion()
+    print("Motion detected!")
+    
+    pir.wait_for_no_motion()
+    print("no motion detected.")
 
-    time.sleep(2)
-    pir.when_no_motion = print("No motion detected. lamp is off")
+
+# from gpiozero import MotionSensor
+# import time
+
+# pir = MotionSensor(12)
+
+# while True:
+#     print("Scanning for motion...")
+#     pir.when_motion = print("Motion detected! lamp is on")
+
+#     time.sleep(2)
+#     pir.when_no_motion = print("No motion detected. lamp is off")
+
+
+
 # import time
 # import RPi.GPIO as GPIO
 # from actuator import turnOn, turnOff
