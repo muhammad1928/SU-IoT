@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Background</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body style="background-color: {{ background_color }};">
+    <div class="container">
+        <h1>Current Weather</h1>
+        <p>{{ weather_description }}</p>
+        <h2>Current Background Color</h2>
+        <p style="font-weight: bold;">{{ background_color }}</p>
+        <p>{{ color_reason }}</p>
+    </div>
+</body>
+</html>

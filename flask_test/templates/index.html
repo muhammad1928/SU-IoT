@@ -3,13 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motion Sensor Background</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Weather Background mocking</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Function to fetch weather data from the server and update the page
+        function updateWeather() {
+            $.getJSON("/weather_data", function(data) {
+                // Update the background color
+                $("body").css("background-color", data.background_color);
+                
+                // Update the weather description
+                $("#weather-description").text(data.description);
+                
+                // Update the reason for the background color
+                $("#color-reason").text(data.reason);
+            });
+        }
+
+        // Periodically update the weather every 5 seconds
+        setInterval(updateWeather, 5000);  // 5000 ms = 5 seconds
+
+        // Initial weather update when the page loads
+        $(document).ready(function() {
+            updateWeather();
+        });
+    </script>
 </head>
-<body style="background-color: {{ color }};">
+<body>
     <div class="container">
-        <h1>Motion Sensor Status</h1>
-        <p>The background changes based on motion detection.</p>
+        <h1>Current Weather</h1>
+        <p id="weather-description">Loading weather...</p>
+        <h2>Current Background Color</h2>
+        <p style="font-weight: bold;" id="background-color">Loading color...</p>
+        <p id="color-reason">Reason for the color...</p>
     </div>
 </body>
 </html>
