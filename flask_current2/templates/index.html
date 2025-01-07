@@ -6,7 +6,8 @@
     <title>Weather Background</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body class"body-color" style="background-color: {{ background_color }};">
+
+<body style="background-color: {{ background_color }};">
     <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px;">
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setDay()">Day</button>
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setDaybutRainy()">Day heavy Clouds or Rain</button>
@@ -26,7 +27,7 @@
     <script>
         function setDay() {
             document.getElementsByClassName("current-weather")[0].innerText = "light in day time";
-            document.getElementsByClassName("body-color")[0].style.backgroundColor = "lightblue";
+            document.body.style.backgroundColor = "lightblue";           
             }
 
         function setNight2() {
