@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather and Motion App</title>
+    <style>
+        body {
+            background-color: {{ background_color }};
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather and Motion Detection</h1>
+        <p>{{ weather_description }}</p>
+        <p>{{ color_reason }}</p>
+    </div>
+</body>
+</html>
