@@ -1,14 +1,14 @@
-from gpiozero import MotionSensor
+# from gpiozero import MotionSensor
 
-pir = MotionSensor(12)
+# pir = MotionSensor(12)
 
-while True:
-    print("Scanning for motions...")
-    pir.wait_for_motion()
-    print("Motion detected!")
+# while True:
+#     print("Scanning for motions...")
+#     pir.wait_for_motion()
+#     print("Motion detected!")
     
-    pir.wait_for_no_motion()
-    print("no motion detected.")
+#     pir.wait_for_no_motion()
+#     print("no motion detected.")
 
 
 # from gpiozero import MotionSensor
@@ -53,3 +53,47 @@ while True:
 # except KeyboardInterrupt: # press control + c to stop the program
 #     print("Quit")
 #     GPIO.cleanup()  # Clean up the GPIO settings
+
+
+
+import RPi.GPIO as GPIO
+import time
+
+# Set up GPIO
+PIR_PIN = 12  # Change this to the GPIO pin you're using
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIR_PIN, GPIO.IN)
+
+try:
+    print("PIR Sensor Ready...")
+    while True:
+        if GPIO.input(PIR_PIN):
+            print("Motion Detected!")
+        else:
+            print("No Motion.")
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Exiting...")
+finally:
+    GPIO.cleanup()
+                
+
+# motion_detected = False
+# last_motion_time = 0
+
+# try:
+#     while True:
+#         if GPIO.input(PIR_PIN):
+#             if not motion_detected:
+#                 print("Motion Detected!")
+#                 motion_detected = True
+#             last_motion_time = time.time()
+#         else:
+#             if motion_detected and (time.time() - last_motion_time > 5):
+#                 print("No Motion for 5 seconds.")
+#                 motion_detected = False
+#         time.sleep(1)
+# except KeyboardInterrupt:
+#     print("Exiting...")
+# finally:
+    # GPIO.cleanup()
