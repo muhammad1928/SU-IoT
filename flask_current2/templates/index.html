@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Background</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class"body-color" style="background-color: {{ background_color }};">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px;">
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setDay()">Day</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setDaybutRainy()">Day heavy Clouds or Rain</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setThunderstorm()"> Day Thunderstorm</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight()">Night in high risk zones</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight2()">Night</button>
+    </div>
+    
+    <div class="container" style="">
+        <h1>Current Weather</h1>
+        <p class="current-weather">{{ weather_description }}</p>
+        <h2>Current Background Color</h2>
+        <p class="color-reason" style="font-weight: bold;">{{ background_color }}</p>
+        <p class="">{{ color_reason }}</p>
+    </div>
+
+    <script>
+        function setDay() {
+            document.getElementsByClassName("current-weather")[0].innerText = "light in day time";
+            document.getElementsByClassName("body-color")[0].style.backgroundColor = "lightblue";
+            }
+
+        function setNight2() {
+            document.getElementsByClassName("current-weather")[0].innerText = "light on clear night time";
+            document.getElementsByClassName("body-color")[0].style.backgroundColor = "darkblue";
+        }
+
+        function setNight() {
+            document.getElementsByClassName("current-weather")[0].innerText = "light in night time in high risk zones";
+        }
+
+        function setThunderstorm() {
+            document.getElementsByClassName("current-weather")[0].innerText = "light during thunderstorm";
+        }
+
+        function setDaybutRainy() {
+            document.getElementsByClassName("current-weather")[0].innerText = "light clouds and rain";
+        }
+    </script>
+</html>

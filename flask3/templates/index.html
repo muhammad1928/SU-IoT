@@ -1,23 +1,28 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Street Lighting</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Weather and Motion App</title>
+    <style>
+        body {
+            background-color: {{ background_color }};
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
-<body style="background-color: {{ background_color }};">
+<body>
     <div class="container">
-        <h1>Smart Street Lighting System</h1>
-        <div class="weather-info">
-            <p><strong>Weather Description:</strong> {{ weather_description }}</p>
-            <p><strong>Motion Detected:</strong> {{ 'Yes' if motion_detected else 'No' }}</p>
-            <p><strong>High-Risk Zone:</strong> {{ 'Yes' if high_risk_zone else 'No' }}</p>
-        </div>
-        <div class="light-display" style="background-color: {{ light_color }}; transition: background-color 0.5s ease;">
-            <p>Current Light State</p>
-        </div>
+        <h1>Weather and Motion Detection</h1>
+        <p>{{ weather_description }}</p>
+        <p>{{ color_reason }}</p>
     </div>
 </body>
 </html>

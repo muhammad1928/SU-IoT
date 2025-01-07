@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; background-color: rgb(121, 108, 108);">
+    <h1 style="background-color: rgb(121, 108, 108); color: white; text-align: center;">Scenario 1</h1>
+    <div style="text-align: center; margin: 20px;">
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setDay()">Day</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight()">Night</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setThunderstorm()">Thunderstorm</button>
+        <button style="padding: 10px 20px; font-size: 16px; background-color: cyan;" onclick="startScenario()">Start</button>
+    </div>
+    <h2 style="text-align: center;">Street Lights</h2>
+    <div style="display: grid; grid-template-columns: repeat(10, 1fr); grid-gap: 5px; justify-items: center; align-items: center;">
+        <!-- Create 60 boxes for the grid -->
+        <script>
+            for (let i = 0; i < 60; i++) {
+                document.write(`<div id="box-${i}" style="width: 20px; height: 20px; border: 1px solid black; background-color: darkgrey;"></div>`);
+            }
+        </script>
+    </div>
+    <script>
+        function setDay() {
+            document.querySelectorAll('[id^="box-"]').forEach(box => {
+                box.style.backgroundColor = 'darkgrey';
+            });
+        }
+
+        function setNight() {
+            document.querySelectorAll('[id^="box-"]').forEach(box => {
+                box.style.backgroundColor = '#ffe385';
+            });
+        }
+
+        function setThunderstorm() {
+            document.querySelectorAll('[id^="box-"]').forEach(box => {
+                box.style.backgroundColor = '#ffd13b';
+            });
+        }
+
+        function startScenario() {
+            const boxes = document.querySelectorAll('[id^="box-"]');
+            const totalBoxes = boxes.length;
+
+            // Reset all boxes
+            boxes.forEach(box => {
+                box.style.border = '1px solid black';
+                box.style.backgroundColor = 'darkgrey';
+            });
+
+            // Assign areas
+            const cityIndexes = Array.from({ length: 30 }, (_, i) => i);
+            const forestIndexes = Array.from({ length: 20 }, (_, i) => i + 30);
+            const trafficIndexes = Array.from({ length: 10 }, (_, i) => i + 50);
+
+            cityIndexes.forEach(index => (boxes[index].style.border = '4px solid red'));
+            forestIndexes.forEach(index => (boxes[index].style.border = '4px solid green'));
+            trafficIndexes.forEach(index => {
+                boxes[index].style.border = '4px solid yellow';
+                boxes[index].style.backgroundColor = '#ffd13b';
+            });
+
+            // Initialize 4 walkers
+            let walkers = [
+                { position: Math.floor(Math.random() * totalBoxes), steps: 0 },
+                { position: Math.floor(Math.random() * totalBoxes), steps: 0 },
+                { position: Math.floor(Math.random() * totalBoxes), steps: 0 },
+                { position: Math.floor(Math.random() * totalBoxes), steps: 0 },
+            ];
+
+            function walk() {
+                walkers.forEach((walker, index) => {
+                    if (walker.steps >= 10) {
+                        const box = boxes[walker.position];
+                        if (box.style.border.includes('green')) {
+                            // Blink if last step falls in forest
+                            let blinkCount = 0;
+                            const blinkInterval = setInterval(() => {
+                                box.style.backgroundColor = box.style.backgroundColor === 'darkgrey' ? '#ffd13b' : 'darkgrey';
+                                blinkCount++;
+                                if (blinkCount >= 5) {
+                                    clearInterval(blinkInterval);
+                                    resetWalker(index);
+                                }
+                            }, 500);
+                        } else {
+                            resetWalker(index);
+                        }
+                        return;
+                    }
+
+                    // Light up current position
+                    const currentBox = boxes[walker.position];
+                    currentBox.style.backgroundColor = '#ffd13b';
+
+                    setTimeout(() => {
+                        if (currentBox.style.border.includes('yellow')) {
+                            currentBox.style.backgroundColor = '#ffd13b';
+                        } else {
+                            currentBox.style.backgroundColor = 'darkgrey';
+                        }
+                    }, 1000);
+
+                    // Move walker
+                    walker.position = Math.random() < 0.5
+                        ? (walker.position + 1) % totalBoxes // Move horizontally
+                        : (walker.position + 10) % totalBoxes; // Move vertically
+
+                    walker.steps++;
+                });
+
+                setTimeout(walk, 1000);
+            }
+
+            function resetWalker(index) {
+                walkers[index] = {
+                    position: Math.floor(Math.random() * totalBoxes),
+                    steps: 0,
+                };
+            }
+
+            walk();
+        }
+    </script>
+</body>
+</html>

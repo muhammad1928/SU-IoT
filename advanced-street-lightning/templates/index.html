@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(121, 108, 108);
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin: 20px;
+        }
+
+        .box {
+            width: 50px;
+            height: 50px;
+            border: 2px solid black;
+            background-color: darkgrey;
+        }
+
+        .city {
+            border: 5px solid red;
+        }
+
+        .forest {
+            border: 5px solid green;
+        }
+
+        .traffic {
+            border: 5px solid yellow;
+            background-color: #ffd13b;
+        }
+
+        .control-buttons {
+            text-align: center;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scenario 1</h1>
+    <div class="control-buttons">
+        <button onclick="setDay()">Day</button>
+        <button onclick="setDaybutRainy()">Day heavy Clouds or Rain</button>
+        <button onclick="setThunderstorm()"> Day Thunderstorm</button>
+        <button onclick="setNight()">Night in high risk zones</button>
+        <button onclick="setNight2()">Night</button>
+        <button style="background-color: cyan;" onclick="startScenario()">Start</button>
+    </div>
+    <h2 style="text-align: center;">Street Lights</h2>
+    <div class="grid" id="grid" style="grid-gap: 40px;">
+        <!-- Boxes will be generated dynamically -->
+    </div>
+    <script>
+        const grid = document.getElementById("grid");
+        const totalBoxes = 60;
+
+        // Generate grid boxes dynamically
+        for (let i = 0; i < totalBoxes; i++) {
+            const div = document.createElement("div");
+            div.id = `box-${i}`;
+            div.className = "box";
+            grid.appendChild(div);
+        }
+
+        function setDay() {
+            document.querySelector("h2").innerText = "light in day time";
+            document.querySelectorAll(".box").forEach(box => {
+                box.style.backgroundColor = "darkgrey";
+            });
+        }
+        function setNight2() {
+            document.querySelector("h2").innerText = "light on clear night time";
+            document.querySelectorAll(".box").forEach(box => {
+                box.style.backgroundColor = "darkgrey";
+            });
+        }
+
+        function setNight() {
+            document.querySelector("h2").innerText = "light in night time in high risk zones";
+            document.querySelectorAll(".box").forEach(box => {
+                box.style.backgroundColor = "#ffe385";
+            });
+        }
+
+        function setThunderstorm() {
+            document.querySelector("h2").innerText = "light during thunderstorm";
+            document.querySelectorAll(".box").forEach(box => {
+                box.style.backgroundColor = "#ffd13b";
+            });
+        }
+
+        function setDaybutRainy() {
+            document.querySelector("h2").innerText = "light clouds and rain";
+            document.querySelectorAll(".box").forEach(box => {
+                box.style.backgroundColor = "#ffe385";
+            });
+        }
+        function startScenario() {
+            const boxes = document.querySelectorAll(".box");
+
+            // Reset all boxes
+            boxes.forEach(box => {
+                box.className = "box";
+                box.style.backgroundColor = "darkgrey";
+            });
+
+            // Assign areas
+            const cityIndexes = [];
+            const forestIndexes = [];
+            const trafficIndexes = [];
+
+            // Distribute zones
+            for (let i = 0; i < totalBoxes; i++) {
+                if (i < 30) {
+                    cityIndexes.push(i);
+                    boxes[i].classList.add("city");
+                } else {
+                    forestIndexes.push(i);
+                    boxes[i].classList.add("forest");
+                }
+            }
+
+            // Randomly place traffic intersections
+            const randomTraffic = [...cityIndexes, ...forestIndexes].sort(() => Math.random() - 0.5).slice(0, 10);
+            randomTraffic.forEach(index => {
+                trafficIndexes.push(index);
+                boxes[index].classList.remove("city", "forest");
+                boxes[index].classList.add("traffic");
+                boxes[index].style.backgroundColor = "#ffd13b";
+            });
+
+            // Initialize walkers with positions that allow for forest movement
+            let walkers = [
+                { position: 0, steps: 0 },
+                { position: 10, steps: 0 },
+                { position: 18, steps: 0 },
+                { position: 28, steps: 0 }, // Fourth walker will be positioned for flexibility
+            ];
+
+            let maxSteps = 5;
+
+            function walk() {
+                walkers.forEach((walker, index) => {
+                    // Stop walkers after maxSteps
+                    if (walker.steps >= maxSteps) {
+                        return;
+                    }
+
+                    // Light up current position
+                    const currentBox = boxes[walker.position];
+                    currentBox.style.backgroundColor = "#ffd13b";
+
+                    // Turn off the light after 2 seconds
+                    setTimeout(() => {
+                        if (!currentBox.classList.contains("traffic")) {
+                            currentBox.style.backgroundColor = "darkgrey";
+                        }
+                    }, 2000);
+
+                    // Move walker to next box (continue to next row if necessary)
+                    let nextPosition = walker.position + 1;
+
+                    // Check for row transitions
+                    if (nextPosition % 10 === 0 && walker.position % 10 !== 0) {
+                        // If we're at the end of the row, move to the next row
+                        walker.position = nextPosition;
+                    } else {
+                        walker.position = nextPosition;
+                    }
+
+                    walker.steps++;
+
+                    // Flash the last box where the walker stops (on the 7th step)
+                    if (walker.steps === maxSteps - 1 && boxes[walker.position].classList.contains("forest")) {
+                        let flashCount = 0;
+                        const flashInterval = setInterval(() => {
+                            boxes[walker.position].style.backgroundColor =
+                                flashCount % 2 === 0 ? "#ffd13b" : "darkgrey";
+                            flashCount++;
+                            if (flashCount > 10) {
+                                clearInterval(flashInterval);
+                            }
+                        }, 500);
+                    }
+                });
+
+                // Check if all walkers have completed their steps
+                const allDone = walkers.every(walker => walker.steps >= maxSteps);
+                if (!allDone) {
+                    setTimeout(walk, 1000);
+                } else {
+                    // Wait 8 seconds before restarting the algorithm
+                    setTimeout(startScenario, 8000);
+                }
+            }
+
+            setTimeout(() => walk(), 1000);
+        }
+    </script>
+</body>
+</html>

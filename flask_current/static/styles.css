@@ -16,13 +16,21 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-h1, h2 {
-    margin-bottom: 10px;
+h1, h2, p {
     color: #333;
-    font-size: 24px;
 }
 
-p {
-    font-size: 18px;
-    color: #555;
+.light-controller {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.light-controller:hover {
+    background-color: #0056b3;
 }

@@ -1,15 +1,14 @@
 import os
 import requests
 from flask import Flask, render_template
-import RPi.GPIO as GPIO
-import time
 
 app = Flask(__name__)
 
 # Read API key from api-weather.txt
 try:
-    with open("../../api-weather.txt", "r") as f:
-        API_KEY = f.read().strip()
+    f = open("../../api-weather.txt", "r")
+    API_KEY = f.read().strip()
+    f.close()
 except FileNotFoundError:
     raise ValueError("API Key file not found. Please create 'api-weather.txt' and add the API key.")
 
@@ -18,25 +17,16 @@ BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 # Weather condition to background mapping
 WEATHER_BACKGROUND_MAP = {
-    "Clear": "#000033",  # Dark blue for clear sky
-    "Clouds": "#A9A9A9",  # Light gray for cloudy
-    "Rain": "#708090",  # Dark gray for rain
-    "Snow": "#FFFFFF",  # White for snow
-    "Thunderstorm": "#2F4F4F",  # Dark slate for thunderstorm
-    "Mist": "#D3D3D3",  # Light gray for mist
+    "Clear": "#000",  # Dark blue for clear sky
+    "Clouds": "#00ffff",  # Light gray for cloudy
+    "Rain": "#66ffff",  # Dark gray for rain
+    "Snow": "#ffffcc",  # White for snow
+    "Thunderstorm": "#ccffff",  # Dark slate for thunderstorm
+    "Mist": "#ccffff",  # Light gray for mist
+    "Sunrise": "#000",  # Warm orange for sunrise
+    "Sunset": "#ccffff",  # Golden yellow for sunset
     "Default": "#87CEEB"  # Sky blue as default color
 }
-
-# Set up GPIO
-PIR_PIN = 12  # Change this to the GPIO pin you're using
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIR_PIN, GPIO.IN)
-
-
-def get_motion_status():
-    """Checks the current motion sensor status."""
-    return GPIO.input(PIR_PIN)
-
 
 def get_weather_data(city):
     """Fetch weather data and determine background color, description, and reasoning."""
@@ -52,17 +42,17 @@ def get_weather_data(city):
         sunrise = sys_info["sunrise"]
         sunset = sys_info["sunset"]
 
-        # Determine the background color based on time and motion
-        if sunrise <= current_time <= sunset:  # Daytime
-            # Brighten background if motion is detected
-            if get_motion_status():
-                background_color = "#FFD700"  # Bright yellow for motion
-                reason += " Motion detected, so the background is brighter."
-                background_color = WEATHER_BACKGROUND_MAP.get(condition, WEATHER_BACKGROUND_MAP["Default"])
-            reason = f"It's daytime with {condition.lower()} weather."
-        else:  # Nighttime
-            background_color = "#000033"  # Darker background for night
-            reason = "It's nighttime, so the background is darker."
+        # Check for sunrise or sunset
+        if current_time <= sunrise + 3600:  # Within 1 hour of sunrise
+            background_color = WEATHER_BACKGROUND_MAP.get("sunrise", WEATHER_BACKGROUND_MAP["Default"])
+            reason = "It's around sunset, so the color is dark."
+        elif current_time >= sunset - 3600:  # Within 1 hour of sunset
+            background_color = WEATHER_BACKGROUND_MAP.get("sunset", WEATHER_BACKGROUND_MAP["Default"])
+            reason = "It's around sunrise, so the color is light."
+        else:
+            background_color = WEATHER_BACKGROUND_MAP.get(condition, WEATHER_BACKGROUND_MAP["Default"])
+            reason = f"The background color is based on the current weather condition: {condition.lower()}."
+
         return {
             "background_color": background_color,
             "description": f"{description}, {temp}°C",
@@ -73,7 +63,6 @@ def get_weather_data(city):
         "description": "Unable to fetch weather data",
         "reason": "Default color is shown because weather data could not be retrieved."
     }
-
 
 @app.route("/")
 def index():
@@ -86,11 +75,5 @@ def index():
         color_reason=weather_data["reason"]
     )
 
-
 if __name__ == "__main__":
-    try:
-        app.run(host="0.0.0.0", port=5001, debug=True)
-    except KeyboardInterrupt:
-        print("Shutting down...")
-    finally:
-        GPIO.cleanup()
+    app.run(host='0.0.0.0', port=8080, debug=True)
