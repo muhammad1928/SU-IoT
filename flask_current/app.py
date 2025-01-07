@@ -13,6 +13,9 @@ try:
 except FileNotFoundError:
     raise ValueError("API Key file not found. Please create 'api-weather.txt' and add the API key.")
 
+
+# OpenWeatherMap base URL
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 # Weather condition to background color mapping
 WEATHER_BACKGROUND_MAP = {
     "Clear": "#cccccc",  # Light off (grey) for clear sky
@@ -97,4 +100,4 @@ def index():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)

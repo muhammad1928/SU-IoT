@@ -3,26 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather and Motion App</title>
-    <style>
-        body {
-            background-color: {{ background_color }};
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-    </style>
+    <title>Weather Background</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-    <div class="container">
-        <h1>Weather and Motion Detection</h1>
-        <p>{{ weather_description }}</p>
-        <p>{{ color_reason }}</p>
+
+<body class="body-color" style="background-color: {{ background_color }};">
+    <!-- Buttons container -->
+    <div style="position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setDay()">Day</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setDayButRainy()">Day Heavy Clouds or Rain</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setThunderstorm()">Day Thunderstorm</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight()">Night in High Risk Zones</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNightClear()">Night</button>
     </div>
+
+    <!-- Weather and color info -->
+    <div class="container" style="margin-top: 120px; text-align: center;">
+        <h1>Motions</h1>
+        <p class="current-weather">{{ weather_description }}</p>
+        <h2>Current Background Color</h2>
+        <p class="color-reason" style="font-weight: bold;">{{ background_color }}</p>
+        <p class="current-bg">{{ color_reason }}</p>
+    </div>
+
+    <script>
+        let status = "day";
+        // Function to fetch motion status periodically
+        function fetchMotionStatus() {
+            fetch('/motion_status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.motion) {
+                        document.body.style.backgroundColor = "##ffd13b"; // Red for motion detected
+                        document.getElementsByClassName("current-weather")[0].innerText = "Motion detected!";
+                        document.getElementsByClassName("current-bg").innerText = "#ffd13b";
+                    } else {
+                        if (status === "day") {
+                            setDay();
+                        } else if (status === "dayButRainy") {
+                            setDayButRainy();
+                        } else if (status === "thunderstorm") {
+                            setThunderstorm();
+                        } else if (status === "night") {
+                            setNight();
+                        } else if (status === "nightClear") {
+                            setNightClear();
+                        }else {
+                            document.body.style.backgroundColor = "#cccccc"; // Gray for no motion
+                            document.getElementsByClassName("current-weather")[0].innerText = "No motion detected.";
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching motion status:', error));
+        }
+
+        // Periodically check for motion every second
+        setInterval(fetchMotionStatus, 1000);
+
+        // Functions to set background and update the server
+        function setBackground(color, reason) {
+            fetch('/set_background', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ color, reason }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    document.body.style.backgroundColor = color;
+                    document.getElementsByClassName("current-weather")[0].innerText = reason;
+                }
+            });
+        }
+
+        function setDay() {
+            setBackground("#87CEEB", "Light in day time");
+            document.getElementsByClassName("current-bg").innerText = "#87CEEB";
+            status = "day";
+        }
+
+        function setDayButRainy() {
+            setBackground("#4682B4", "Heavy clouds or rain during the day");
+            document.getElementsByClassName("current-bg").innerText = "#4682B4";
+            status = "dayButRainy";
+        }
+
+        function setThunderstorm() {
+            setBackground("#FFD700", "Light during thunderstorm");
+            document.getElementsByClassName("current-bg").innerText = "#FFD700";
+            status = "thunderstorm";
+        }
+
+        function setNight() {
+            setBackground("#4B0082", "Light in high-risk zones at night");
+            document.getElementsByClassName("current-bg").innerText = "#4B0082";
+            status = "night";
+        }
+
+        function setNightClear() {
+            setBackground("#191970", "Light on a clear night");
+            document.getElementsByClassName("current-bg").innerText = "#191970";
+            status = "nightClear";
+        }
+    </script>
 </body>
 </html>

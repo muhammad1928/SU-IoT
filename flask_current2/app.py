@@ -17,15 +17,13 @@ BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 # Weather condition to background mapping
 WEATHER_BACKGROUND_MAP = {
-    "Clear": "#000",  # Dark blue for clear sky
-    "Clouds": "#00ffff",  # Light gray for cloudy
-    "Rain": "#66ffff",  # Dark gray for rain
-    "Snow": "#ffffcc",  # White for snow
-    "Thunderstorm": "#ccffff",  # Dark slate for thunderstorm
-    "Mist": "#ccffff",  # Light gray for mist
-    "Sunrise": "#000",  # Warm orange for sunrise
-    "Sunset": "#ccffff",  # Golden yellow for sunset
-    "Default": "#87CEEB"  # Sky blue as default color
+    "Clear": "#cccccc",  # Light off (grey) for clear sky
+    "Clouds": "#fffe38",  # Level 1 light on (light yellow) for cloudy
+    "Rain": "#fffe38",  # Level 1 light on (light yellow) for rain
+    "Snow": "#cccccc",  # Light off (grey) for snow
+    "Thunderstorm": "#ffd13b",  # Level 2 light on (yellow) for thunderstorm
+    "Mist": "#fffe38",  # Level 1 light on (light yellow) for mist
+    "Default": "#cccccc"  # Default background color
 }
 
 def get_weather_data(city):

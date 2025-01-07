@@ -7,44 +7,51 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 
-<body style="background-color: {{ background_color }};">
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px;">
+<body class="body-color" style="background-color: {{ background_color }};">
+    <!-- Buttons container -->
+    <div style="position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setDay()">Day</button>
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setDaybutRainy()">Day heavy Clouds or Rain</button>
-        <button style="padding: 10px 20px; font-size: 16px;" onclick="setThunderstorm()"> Day Thunderstorm</button>
-        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight()">Night in high risk zones</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setThunderstorm()">Day Thunderstorm</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight()">Night in high-risk zones</button>
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight2()">Night</button>
     </div>
-    
-    <div class="container" style="">
+
+    <!-- Weather and color info -->
+    <div class="container" style="margin-top: 120px; text-align: center;">
         <h1>Current Weather</h1>
         <p class="current-weather">{{ weather_description }}</p>
         <h2>Current Background Color</h2>
         <p class="color-reason" style="font-weight: bold;">{{ background_color }}</p>
-        <p class="">{{ color_reason }}</p>
+        <p>{{ color_reason }}</p>
     </div>
+</body>
 
+</body>
     <script>
         function setDay() {
             document.getElementsByClassName("current-weather")[0].innerText = "light in day time";
-            document.body.style.backgroundColor = "lightblue";           
+            document.body.style.backgroundColor = "#cccccc";           
             }
 
         function setNight2() {
             document.getElementsByClassName("current-weather")[0].innerText = "light on clear night time";
-            document.getElementsByClassName("body-color")[0].style.backgroundColor = "darkblue";
+            document.body.style.backgroundColor = "#cccccc";
         }
 
         function setNight() {
             document.getElementsByClassName("current-weather")[0].innerText = "light in night time in high risk zones";
+            document.body.style.backgroundColor = "#fffe38";
         }
 
         function setThunderstorm() {
             document.getElementsByClassName("current-weather")[0].innerText = "light during thunderstorm";
+            document.body.style.backgroundColor = "#ffd13b";
         }
 
         function setDaybutRainy() {
             document.getElementsByClassName("current-weather")[0].innerText = "light clouds and rain";
+            document.body.style.backgroundColor = "#fffe38";
         }
     </script>
 </html>
