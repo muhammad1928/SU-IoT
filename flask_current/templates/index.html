@@ -9,16 +9,18 @@
 <body style="background-color: {{ background_color }};">
     <div class="container">
         <!-- Date and Time -->
-        <h2>Date and Time</h2>
         <p>{{ date_time }}</p>
+        <p></p>
         
         <!-- Current Weather -->
         <h2>Current Weather</h2>
         <p>{{ weather_description }}</p>
+        <p></p>
 
         <!-- Motion Detection -->
         <h2>Motion Detection</h2>
         <p>Count: {{ motion_count }}</p>
+        <p></p>
         
         <!-- Current Lamp Status -->
         <h2>Current Lamp Status</h2>
@@ -28,8 +30,8 @@
         <h2>Lamp Controller</h2>
         <form method="POST">
             <button type="submit" name="action" value="off" class="light-controller">Turn off</button>
-            <button type="submit" name="action" value="min" class="light-controller">Turn on min level</button>
-            <button type="submit" name="action" value="max" class="light-controller">Turn on max level</button>
+            <button type="submit" name="action" value="min" class="light-controller">Turn on min</button>
+            <button type="submit" name="action" value="max" class="light-controller">Turn on max</button>
         </form>
 
     </div>
