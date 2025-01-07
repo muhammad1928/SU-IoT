@@ -16,11 +16,11 @@ except FileNotFoundError:
 # Weather condition to background color mapping
 WEATHER_BACKGROUND_MAP = {
     "Clear": "#cccccc",  # Light off (grey) for clear sky
-    "Clouds": "#fffe38",  # Level 1 light on (light yellow) for cloudy
-    "Rain": "#fffe38",  # Level 1 light on (light yellow) for rain
+    "Clouds": "#ffff394",  # Level 1 light on (light yellow) for cloudy
+    "Rain": "#ffdc2e",  # Level 1 light on (light yellow) for rain
     "Snow": "#cccccc",  # Light off (grey) for snow
     "Thunderstorm": "#ffd13b",  # Level 2 light on (yellow) for thunderstorm
-    "Mist": "#fffe38",  # Level 1 light on (light yellow) for mist
+    "Mist": "#ffdc2e",  # Level 1 light on (light yellow) for mist
     "Default": "#cccccc"  # Default background color
 }
 
@@ -74,9 +74,9 @@ def index():
         if action == "off":
             CURRENT_LIGHT_COLOR = "#cccccc"
         elif action == "min":
-            CURRENT_LIGHT_COLOR = "#fffe38"
+            CURRENT_LIGHT_COLOR = "#fff394"
         elif action == "max":
-            CURRENT_LIGHT_COLOR = "#ffd13b"
+            CURRENT_LIGHT_COLOR = "#ffdc2e"
 
     # Use manually set color or weather-based color
     background_color = CURRENT_LIGHT_COLOR if CURRENT_LIGHT_COLOR else weather_data["background_color"]

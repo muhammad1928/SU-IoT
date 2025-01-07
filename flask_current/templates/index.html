@@ -9,15 +9,19 @@
 <body style="background-color: {{ background_color }};">
     <div class="container">
         <!-- Date and Time -->
-        <h2>Date and Time:</h2>
+        <h2>Date and Time</h2>
         <p>{{ date_time }}</p>
         
         <!-- Current Weather -->
         <h2>Current Weather</h2>
         <p>{{ weather_description }}</p>
+
+        <!-- Motion Detection -->
+        <h2>Motion Detection</h2>
+        <p>Count: {{ motion_count }}</p>
         
-        <!-- Current Light Status -->
-        <h2>Current Light Status</h2>
+        <!-- Current Lamp Status -->
+        <h2>Current Lamp Status</h2>
         <p>{{ current_light_status }}</p>
 
         <!-- Lamp Controller -->
@@ -28,9 +32,6 @@
             <button type="submit" name="action" value="max" class="light-controller">Turn on max level</button>
         </form>
 
-        <!-- Motion Detection -->
-        <h2>Motion Detection</h2>
-        <p>Today's Motion Detected: {{ motion_count }}</p>
     </div>
 </body>
 </html>
