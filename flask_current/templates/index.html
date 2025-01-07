@@ -8,32 +8,33 @@
 </head>
 <body style="background-color: {{ background_color }};">
     <div class="container">
-        <h1>Current Weather</h1>
-        <!-- Display Date and Time -->
-        <p><strong>Date and Time:</strong> {{ date_time }}</p>
-        <!-- Display Weather Description -->
+        <h1>Weather and Light Controller</h1>
+        
+        <!-- Date and Time -->
+        <h2>Date and Time:</h2>
+        <p>{{ date_time }}</p>
+        
+        <!-- Current Weather -->
+        <h2>Current Weather</h2>
         <p>{{ weather_description }}</p>
-
-        <!-- Light Status -->
-        <h2>Current Light Status:</h2>
-        <p>
-            #cccccc = OFF<br>
-            #fffe38 = Level 1 Light ON<br>
-            #ffd13b = Level 2 Light ON
-        </p>
+        
+        <!-- Current Light Status -->
+        <h2>Current Light Status</h2>
+        <p>{{ current_light_status }}</p>
 
         <!-- Lamp Controller -->
         <h2>Lamp Controller</h2>
         <form method="POST">
-            <button type="submit" name="current_light" value="{{ light_color }}" class="light-controller">
-                Change Light (Current: {{ light_color }})
-            </button>
+            <button type="submit" name="action" value="off" class="light-controller">Turn off</button>
+            <button type="submit" name="action" value="min" class="light-controller">Turn on min level</button>
+            <button type="submit" name="action" value="max" class="light-controller">Turn on max level</button>
         </form>
 
-        <!-- Motion Detected -->
+        <!-- Motion Detection -->
         <h2>Motion Detection</h2>
-        <p><strong>Today's Motion Detected:</strong> {{ motion_count }}</p>
+        <p>Today's Motion Detected: {{ motion_count }}</p>
     </div>
 </body>
 </html>
+
 

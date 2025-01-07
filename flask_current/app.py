@@ -13,9 +13,6 @@ try:
 except FileNotFoundError:
     raise ValueError("API Key file not found. Please create 'api-weather.txt' and add the API key.")
 
-# OpenWeatherMap base URL
-BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
-
 # Weather condition to background color mapping
 WEATHER_BACKGROUND_MAP = {
     "Clear": "#cccccc",  # Light off (grey) for clear sky
@@ -27,9 +24,15 @@ WEATHER_BACKGROUND_MAP = {
     "Default": "#cccccc"  # Default background color
 }
 
-# Default light status
-CURRENT_LIGHT_COLOR = "#cccccc"
-MOTION_DETECTED_COUNT = 0  # Default motion count
+# Color codes and their light statuses
+LIGHT_STATUSES = {
+    "#cccccc": "Light off",
+    "#fffe38": "Light on min",
+    "#ffd13b": "Light on max"
+}
+
+# Default light color
+CURRENT_LIGHT_COLOR = None  # Start with None to use weather-based background by default
 
 def get_weather_data(city):
     """Fetch weather data and determine background color and description."""
@@ -41,7 +44,7 @@ def get_weather_data(city):
         description = weather_data["weather"][0]["description"].capitalize()
         temp = weather_data["main"]["temp"]
 
-        # Use weather condition for background color
+        # Determine background color based on the weather condition
         background_color = WEATHER_BACKGROUND_MAP.get(condition, WEATHER_BACKGROUND_MAP["Default"])
 
         return {
@@ -55,7 +58,7 @@ def get_weather_data(city):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global CURRENT_LIGHT_COLOR, MOTION_DETECTED_COUNT
+    global CURRENT_LIGHT_COLOR
 
     # Get the current date and time
     now = datetime.now()
@@ -65,26 +68,32 @@ def index():
     city = "Stockholm"  # Default city
     weather_data = get_weather_data(city)
 
-    # Handle light controller button
+    # Determine the background color (weather-based or manually set)
     if request.method == "POST":
-        current_color = request.form.get("current_light")
-        if current_color == "#cccccc":
-            CURRENT_LIGHT_COLOR = "#fffe38"
-        elif current_color == "#fffe38":
-            CURRENT_LIGHT_COLOR = "#ffd13b"
-        elif current_color == "#ffd13b":
+        action = request.form.get("action")
+        if action == "off":
             CURRENT_LIGHT_COLOR = "#cccccc"
+        elif action == "min":
+            CURRENT_LIGHT_COLOR = "#fffe38"
+        elif action == "max":
+            CURRENT_LIGHT_COLOR = "#ffd13b"
+
+    # Use manually set color or weather-based color
+    background_color = CURRENT_LIGHT_COLOR if CURRENT_LIGHT_COLOR else weather_data["background_color"]
+
+    # Determine the current light status
+    current_light_status = LIGHT_STATUSES.get(background_color, "Unknown Status")
 
     # Simulate motion detected count for now
-    MOTION_DETECTED_COUNT += 1  # Increment on every page load (for demonstration)
+    motion_detected_count = 5  # Example static count
 
     return render_template(
         "index.html",
         date_time=date_time,
         weather_description=weather_data["description"],
-        background_color=weather_data["background_color"],
-        light_color=CURRENT_LIGHT_COLOR,
-        motion_count=MOTION_DETECTED_COUNT
+        background_color=background_color,
+        current_light_status=current_light_status,
+        motion_count=motion_detected_count
     )
 
 if __name__ == "__main__":
