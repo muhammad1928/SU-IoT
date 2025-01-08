@@ -14,7 +14,7 @@
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setDaybutRainy()">Day heavy Clouds or Rain</button>
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setThunderstorm()">Day Thunderstorm</button>
         <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight()">Night in high-risk zones</button>
-        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight2()">Night</button>
+        <button style="padding: 10px 20px; font-size: 16px;" onclick="setNight2()">Night no risk</button>
     </div>
 
     <!-- Weather and color info -->
@@ -23,34 +23,34 @@
         <p class="current-weather">{{ weather_description }}</p>
         <h2>Current Background Color</h2>
         <p class="color-reason" style="font-weight: bold;">{{ background_color }}</p>
-        <p>{{ color_reason }}</p>
+        <p class="color2">{{ color_reason }}</p>
     </div>
 </body>
 
 </body>
     <script>
         function setDay() {
-            document.getElementsByClassName("current-weather")[0].innerText = "light in day time";
+            document.getElementsByClassName("color2").innerText = "no light in day time";
             document.body.style.backgroundColor = "#cccccc";           
-            }
+        }
 
         function setNight2() {
-            document.getElementsByClassName("current-weather")[0].innerText = "light on clear night time";
+            document.getElementsByClassName("color2")[0].innerText = "no light on clear night time in low risk zone";
             document.body.style.backgroundColor = "#cccccc";
         }
 
         function setNight() {
-            document.getElementsByClassName("current-weather")[0].innerText = "light in night time in high risk zones";
+            document.getElementsByClassName("color2")[0].innerText = "light on during night time in high risk zones";
             document.body.style.backgroundColor = "#fffe38";
         }
 
         function setThunderstorm() {
-            document.getElementsByClassName("current-weather")[0].innerText = "light during thunderstorm";
+            document.getElementsByClassName("color2")[0].innerText = "light on during thunderstorm";
             document.body.style.backgroundColor = "#ffd13b";
         }
 
         function setDaybutRainy() {
-            document.getElementsByClassName("current-weather")[0].innerText = "light clouds and rain";
+            document.getElementsByClassName("color2")[0].innerText = "light on during clouds and rain";
             document.body.style.backgroundColor = "#fffe38";
         }
     </script>

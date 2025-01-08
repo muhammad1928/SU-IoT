@@ -63,21 +63,21 @@ import time
 PIR_PIN = 12  # Change this to the GPIO pin you're using
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIR_PIN, GPIO.IN)
-
-try:
-    print("PIR Sensor Ready...")
-    while True:
-        if GPIO.input(PIR_PIN):
-            print("Motion Detected!")
-        else:
-            print("No Motion.")
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Exiting...")
-finally:
-    GPIO.cleanup()
+def pir_test():
+    try:
+        print("PIR Sensor Ready...")
+        while True:
+            if GPIO.input(PIR_PIN):
+                print("Motion Detected!")
+            else:
+                print("No Motion.")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Exiting...")
+    finally:
+        GPIO.cleanup()
                 
-
+pir_test()
 # motion_detected = False
 # last_motion_time = 0
 

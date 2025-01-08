@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather-Based Lighting System</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        // Function to update the body color and motion text dynamically
+        function fetchStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.body.style.backgroundColor = data.color;
+                    document.getElementById("motion-status").innerText = data.motion_detected ? "Motion Detected" : "No Motion";
+                    document.getElementById("light-level").innerText = `Light Level: ${data.light_level}`;
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Function to set a manual weather condition
+        function setWeather(condition) {
+            fetch('/set-weather', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ condition: condition })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Weather condition set to: ${condition}`);
+                fetchStatus();
+            })
+            .catch(err => console.error(err));
+        }
+
+        // Poll the status every second
+        setInterval(fetchStatus, 1000);
+    </script>
+</head>
+<body>
+    <div class="control-panel">
+        <button onclick="setWeather('Clear')">Clear</button>
+        <button onclick="setWeather('Rain')">Rain</button>
+        <button onclick="setWeather('Thunderstorm')">Thunderstorm</button>
+        <button onclick="setWeather('Snow')">Snow</button>
+        <button onclick="setWeather('Cloudy')">Cloudy</button>
+    </div>
+    <div class="container">
+        <h1>Weather-Based Lighting System</h1>
+        <p id="light-level">Light Level: Off</p>
+        <p id="motion-status">No Motion</p>
+    </div>
+</body>
+</html>

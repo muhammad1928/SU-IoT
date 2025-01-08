@@ -23,7 +23,9 @@ WEATHER_BACKGROUND_MAP = {
     "Snow": "#cccccc",  # Light off (grey) for snow
     "Thunderstorm": "#ffd13b",  # Level 2 light on (yellow) for thunderstorm
     "Mist": "#fffe38",  # Level 1 light on (light yellow) for mist
-    "Default": "#cccccc"  # Default background color
+    "Default": "#cccccc",  # Default background color
+    "sunrise": "#cccccc",
+    "sunset": "#fffe38"
 }
 
 def get_weather_data(city):
@@ -43,10 +45,10 @@ def get_weather_data(city):
         # Check for sunrise or sunset
         if current_time <= sunrise + 3600:  # Within 1 hour of sunrise
             background_color = WEATHER_BACKGROUND_MAP.get("sunrise", WEATHER_BACKGROUND_MAP["Default"])
-            reason = "It's around sunset, so the color is dark."
+            reason = "It's around sunrise, so the color is dark."
         elif current_time >= sunset - 3600:  # Within 1 hour of sunset
             background_color = WEATHER_BACKGROUND_MAP.get("sunset", WEATHER_BACKGROUND_MAP["Default"])
-            reason = "It's around sunrise, so the color is light."
+            reason = "It's around sunset, so the color is light."
         else:
             background_color = WEATHER_BACKGROUND_MAP.get(condition, WEATHER_BACKGROUND_MAP["Default"])
             reason = f"The background color is based on the current weather condition: {condition.lower()}."
@@ -56,11 +58,7 @@ def get_weather_data(city):
             "description": f"{description}, {temp}°C",
             "reason": reason
         }
-    return {
-        "background_color": WEATHER_BACKGROUND_MAP["Default"],
-        "description": "Unable to fetch weather data",
-        "reason": "Default color is shown because weather data could not be retrieved."
-    }
+
 
 @app.route("/")
 def index():

@@ -63,8 +63,8 @@
         <button style="background-color: cyan;" onclick="startScenario()">Start</button>
     </div>
     <h2 style="text-align: center;">Street Lights</h2>
-    <div class="grid" id="grid" style="grid-gap: 40px;">
-        <!-- Boxes will be generated dynamically -->
+    <div class="grid" id="grid" style="grid-gap: 40px; ">
+        
     </div>
     <script>
         const grid = document.getElementById("grid");
@@ -75,6 +75,7 @@
             const div = document.createElement("div");
             div.id = `box-${i}`;
             div.className = "box";
+            div.style.borderRadius = "50%";
             grid.appendChild(div);
         }
 
@@ -92,7 +93,7 @@
         }
 
         function setNight() {
-            document.querySelector("h2").innerText = "light in night time in high risk zones";
+            document.querySelector("h2").innerText = "light in night time";
             document.querySelectorAll(".box").forEach(box => {
                 box.style.backgroundColor = "#ffe385";
             });
@@ -112,6 +113,7 @@
             });
         }
         function startScenario() {
+            document.querySelector("h2").innerText = "Street Lights in night time";
             const boxes = document.querySelectorAll(".box");
 
             // Reset all boxes
