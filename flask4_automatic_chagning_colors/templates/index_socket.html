@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Light Status</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('update_light', function(data) {
+            const lightElement = document.getElementById("light-color");
+            lightElement.innerText = data.color;
+            lightElement.style.color = data.color;
+        });
+    </script>
+</head>
+<body>
+    <h1>Current Light Color</h1>
+    <p id="light-color" style="font-size: 24px; color: #000000;">Loading...</p>
+</body>
+</html>

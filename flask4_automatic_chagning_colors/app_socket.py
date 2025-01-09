@@ -1,8 +1,10 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template
+from flask_socketio import SocketIO
 import threading
 import time
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 lights = {
     "color1": "#ff0000",
@@ -16,6 +18,7 @@ def func1():
     while True:
         for color_name, color_value in lights.items():
             send_data["color"] = color_value
+            socketio.emit('update_light', send_data)  # Send data to all clients
             time.sleep(5)
 
 # Start the function in a background thread
@@ -23,11 +26,7 @@ threading.Thread(target=func1, daemon=True).start()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
-
-@app.route("/light-status")
-def light_status():
-    return jsonify(send_data)
+    return render_template("index_socket.html")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
