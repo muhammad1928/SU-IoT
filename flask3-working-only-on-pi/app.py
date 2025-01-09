@@ -1,159 +1,177 @@
-import requests
-from datetime import datetime
-import RPi.GPIO as GPIO
-import time
-from flask import Flask, render_template, jsonify, request
+# from flask import Flask, render_template, jsonify, request
+# import requests
+# from datetime import datetime
+# import RPi.GPIO as GPIO
+# import time
+# import threading
 
-app = Flask(__name__) 
+# app = Flask(__name__)
 
-try:
-    f = open("api.txt", "r")
-    API_KEY = f.read().strip()
-    f.close()
-except FileNotFoundError:
-    raise ValueError("API Key file not found. Please create 'api-weather.txt' and add the API key.")
+# # Global variables
+# light_status = "#cccccc"
+# current_weather = None
+# motion_detected = False
+# test_mode = False
+# test_weather = None
+# is_day = True
+# danger_zone = True  # You can set this based on your criteria
+
+# try:
+#     with open("api.txt", "r") as f:
+#         API_KEY = f.read().strip()
+# except FileNotFoundError:
+#     raise ValueError("API Key file not found. Please create 'api.txt' and add the API key.")
+# # Set up GPIO
+# PIR_PIN = 12  # Change this to the GPIO pin you're using
+
+# BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+
+# def calculate_light_status(weather_desc, is_daytime, has_motion):
+#     """Calculate light status based on conditions"""
+#     if is_daytime:
+#         # Daytime logic
+#         if weather_desc == "Clear":
+#             return "#cccccc"  # Always off during day if clear
+#         elif weather_desc in ["Thunderstorm", "Snow"]:
+#             return "#ffd500"  # Always level 2 during day if thunderstorm/snow
+#         else:  # Mist, Clouds, etc.
+#             return "#ffd500" if has_motion else "#fff394"
+#     else:
+#         # Nighttime logic
+#         if not danger_zone:
+#             if weather_desc == "Clear":
+#                 return "#fff394" if has_motion else "#cccccc"
+#             elif weather_desc in ["Rain", "Thunderstorm"]:
+#                 return "#ffd500" if has_motion else "#fff394"
+#             else:  # Cloudy, Mist, Snow
+#                 return "#ffd500" if has_motion else "#fff394"
+#         else:
+#             if weather_desc in ["Thunderstorm", "Mist", "Snow", "Rain"]:
+#                 return "#ffd500"  # Always level 2
+#             else:
+#                 return "#ffd500" if has_motion else "#fff394"
+
+# def get_weather_data(city):
+#     """Fetch weather data and return formatted response"""
+#     global test_mode, test_weather, is_day
+    
+#     if test_mode and test_weather:
+#         return {
+#             "temperature": 20,
+#             "weather": test_weather,
+#             "description": test_weather.lower(),
+#             "sunrise": "06:00",
+#             "sunset": "18:00"
+#         }
+    
+#     params = {"q": city, "appid": API_KEY, "units": "metric"}
+#     response = requests.get(BASE_URL, params=params)
+#     if response.status_code == 200:
+#         data = response.json()
+#         sunrise = datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M')
+#         sunset = datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M')
+        
+#         # Update is_day based on current time
+#         current_time = datetime.now()
+#         sunrise_time = datetime.strptime(sunrise, '%H:%M').replace(
+#             year=current_time.year, month=current_time.month, day=current_time.day)
+#         sunset_time = datetime.strptime(sunset, '%H:%M').replace(
+#             year=current_time.year, month=current_time.month, day=current_time.day)
+#         is_day = sunrise_time <= current_time <= sunset_time
+        
+#         return {
+#             "temperature": data['main']['temp'],
+#             "weather": data['weather'][0]['main'],
+#             "description": data['weather'][0]['description'],
+#             "sunrise": sunrise,
+#             "sunset": sunset
+#         }
+#     return None
+
+# def update_system_status():
+#     """Update system status based on weather and motion"""
+#     global light_status, current_weather, motion_detected
+    
+#     while True:
+#         current_weather = get_weather_data("Stockholm")
+#         if current_weather:
+#             light_status = calculate_light_status(
+#                 current_weather["weather"], 
+#                 is_day, 
+#                 motion_detected
+#             )
+#         time.sleep(1)
+
+# def monitor_motion():
+#     """Monitor PIR sensor"""
+#     global motion_detected
+#     GPIO.setmode(GPIO.BCM)
+#     GPIO.setup(PIR_PIN, GPIO.IN)
+    
+#     while True:
+#         if not test_mode:
+#             motion_detected = GPIO.input(PIR_PIN)
+#         time.sleep(0.1)
+
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
+
+# @app.route('/api/status')
+# def get_status():
+#     return jsonify({
+#         'light_status': light_status,
+#         'weather': current_weather,
+#         'motion': motion_detected,
+#         'is_day': is_day,
+#         'danger_zone': danger_zone
+#     })
+
+# @app.route('/api/test-weather', methods=['POST'])
+# def test_weather_endpoint():
+#     global test_mode, test_weather
+#     test_mode = True
+#     test_weather = request.json.get('weather')
+#     return jsonify({'status': 'success'})
+
+# @app.route('/api/test-motion', methods=['POST'])
+# def test_motion_endpoint():
+#     global motion_detected, test_mode
+#     test_mode = True
+#     motion_detected = request.json.get('motion', False)
+#     return jsonify({'status': 'success'})
+
+# if __name__ == '__main__':
+#     # Start background threads
+#     weather_thread = threading.Thread(target=update_system_status, daemon=True)
+#     motion_thread = threading.Thread(target=monitor_motion, daemon=True)
+#     weather_thread.start()
+#     motion_thread.start()
+    
+#     try:
+#         app.run(host='0.0.0.0', port=5000, debug=True)
+#     finally:
+#         GPIO.cleanup()
 
 
-BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
-light_settings = {
-    "light": "#cccccc",
-    "manual_weather": None,
-    "previous_light_level": "Off"
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+light_status = {
+    "light_level": "Off",
+    "color": "#cccccc",
+    "motion_detected": False,
+    "manual_weather": None,  # For manual weather testing
+    "previous_light_level": "Off",
+    "previous_color": "#cccccc",
 }
 
-def get_weather_data(city):
-    """Fetch weather data and determine background color, description, and reasoning."""
-    params = {"q": city, "appid": API_KEY, "units": "metric"}  # Metric units for Celsius
-    response = requests.get(BASE_URL, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        main = data.get('main', {})
-        weather = data.get('weather', [{}])[0]
-        sys = data.get('sys', {})
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        temp = main.get('temp')
-        weather_description = weather.get('main')
-        dt = data.get('dt')
-        sunrise = sys.get('sunrise')
-        sunset = sys.get('sunset')
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        sunrise_time = datetime.fromtimestamp(sunrise).strftime('%Y-%m-%d %H:%M:%S')
-        sunset_time = datetime.fromtimestamp(sunset).strftime('%Y-%m-%d %H:%M:%S')
-        sunrise = sys.get('sunrise')
-        dange_zone = True # indicating it is danger zone
-        weather_data = {
-            "current_time": current_time,
-            "temperature": temp,
-            "weather": weather_description,
-            "sunrise": sunrise_time,
-            "sunset": sunset_time,
-            "current_time": current_time,
-            "danger_Zone": dange_zone
-        }
-        if not (sunrise <= dt <= sunset): # indicating it is not between sunrise and sunset
-            if not(dange_zone): # indicating it is not danger zones
-                if weather_description == "Clear": # indicating it is clear sky
-                    lights_off = True
-                    a = "light is off cuz no danger zone and it is clear sky"
-                    a = "waitfor1"
-                    return a, lights_off
-                elif (weather_description == "Rain") or (weather_description == "Thunderstorm"):
-                    lights_off = False
-                    a = "it is raining so light level is 1 wait for motion to turn on lights to level 2"
-                    a = "waitfor2"
-                    return a, lights_off
-                else: # it is cloudy, snowing or mist
-                    lights_off = True
-                    a = "it is cloudy, snowing or mist so wait for motion to turn on lights to level 1"
-                    a = "waitfor1"
-                    return a, lights_off 
-            else: # it is danger zone
-                if (weather_description == "Thunderstorm") or (weather_description == "Rain") or (weather_description == "Mist") or (weather_description == "Snow"): # if the weather is thunderstorm, rain or mist then light level is 2
-                    lights_off = False
-                    a = "it is thunderstorm so light level is 2 "
-                    a = "lightis2"
-                    return a, lights_off
-                else: # it is danger zone but not thunderstorm, snow,  rain or mist
-                    lights_off = False
-                    a = "light is always on level 1 cuz it is danger zone and it is night time. waiting for motion for light level 2"
-                    a = "waitfor2"
-                    return a, lights_off
-        else: # it is day time
-            if weather_description == "Clear": # indicating it is clear sky
-                lights_off = True
-                a = "light is off cuz no danger zone and it is day time and clear sky"
-                a = "lightis0"
-                return a, lights_off
-            elif (weather_description == "Thunderstorm") or (weather_description =="Snow"): # if the weather is snow or thunderstorm then light level is 2
-                lights_off = False
-                a = "it is raining so light level is 2"
-                a = "lightis2"
-                return a, lights_off
-            else: # it is cloudy, snowing, mist or raining
-                lights_off = True
-                a = "it is cloudy or mist so wait for motion to turn on lights to level 1"
-                a = "waitfor2"
-                return a, lights_off
-    else:
-        return("Error:", response.status_code, response.text)
+# Route for the homepage
+@app.route("/")
+def index():
+    return render_template("index.html", light_status=light_status)
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
 
-# Set up GPIO
-PIR_PIN = 12  # Change this to the GPIO pin you're using
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIR_PIN, GPIO.IN)
-def pir_test():
-    weather = get_weather_data("Stockholm") # get the weather data
-    global light 
-    if weather[0] == "lightis2": # light level is 2
-        print("light level is 2 because of weather condition") 
-        light = "#ffd500"
-    elif weather[0] == "lightis0": # light level is 0 no need for light
-        print("light level is 0 because of no need for light")
-        light = "#cccccc"
-    elif weather[0] == "waitfor1": # light is off but waiting for motion to turn on lights to level 1
-        print("light is off but waiting for motion to turn on lights to level 1") 
-        light = "#cccccc"
-        try:
-            print("PIR Sensor Ready...")
-            while True:
-                for i in range(5): # loop it for 10 minutes to reduce api usage
-                    if GPIO.input(PIR_PIN):
-                        print("Motion Detected! turn on light to level 1") # light level 1
-                        light = "#fff394"
-                    else:
-                        print("No Motion. turn light off") # light off
-                        light = "#cccccc"
-                    time.sleep(1)
-                    i += 1
-                    print(i)
-                print("calling pirtest again 1")
-                pir_test()  # recall this function to check the weather again after 10 minutes
-                print("calling pirtest again 2")
-        except KeyboardInterrupt:
-            print("Exiting...")
-        finally:
-            GPIO.cleanup()
-    else: # light is on level 1 and waiting for motion to turn on lights to level 2
-        try:
-            print("PIR Sensor Ready...")
-            while True:
-                for i in range(5): # loop it for 10 minutes to reduce api usage
-                    if GPIO.input(PIR_PIN):
-                        print("Motion Detected! turn on light to level 2") # light level 2
-                        light = "#ffd500"
-                    else:
-                        print("No Motion. turn light level 1") # light level 1
-                    time.sleep(1)
-                    i += 1
-                    print(i)
-                print("calling pirtest again 1")
-                pir_test() # recall this function to check the weather again after 10 minutes
-                print("calling pirtest again 2")
-        except KeyboardInterrupt:
-            print("Exiting...")
-        finally:
-            GPIO.cleanup()
-    
-                
-pir_test()
