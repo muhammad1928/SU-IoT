@@ -1,27 +1,25 @@
-import time
 def func1():
-    for i in range(3):
-        print(f"func1: {i}")
-    time.sleep(1)
+    print("Hello from func1")
     func2()
 
 def func2():
-    for i in range(3):
-        print(f"func2: {i}")
-    time.sleep(1)
+    print("Hello from func2")
+    while True:
+        for i in range(2):
+            print(i)
+            func2()
+            if i == 2:
+                break
     func3()
 
 def func3():
-    for j in range(3):
-        if j <= 3:
-            print(f"func3: {j}")
-            time.sleep(1)  
-        else:  
-            func4()
-            print(f"func3: {j}")
+    print("Hello from func3")
 
-def func4():
-    print(f"func4:")
-    time.sleep(1)
-    
 func1()
+lights = {
+    "lightlevel0": "#cccccc",
+    "lightlevel1": "#fff394",
+    "lightlevel2": "#ffd500",
+}
+
+print(lights["lightlevel1"])
