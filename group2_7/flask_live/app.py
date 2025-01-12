@@ -53,9 +53,9 @@ def get_weather_data(city):
     global weather_description
     """Fetch weather data and determine light level needed"""
     try:
-        params = {"q": city, "appid": API_KEY, "units": "metric"}
+        params = {"q": city, "appid": API_KEY, "units": "metric"} # Set parameters
         response = requests.get(BASE_URL, params=params)
-        response.raise_for_status()
+        response.raise_for_status() # Raise exception if status is not 200
         
         data = response.json() # Get JSON data 
         main = data.get('main', {}) # Get main data

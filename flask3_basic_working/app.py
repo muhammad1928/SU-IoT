@@ -8,16 +8,16 @@ from threading import Lock
 
 app = Flask(__name__)
 
-# Global variables and constants
+# Global variables and constants for light levels
 lights = {
     "lightlevel0": "#cccccc",
     "lightlevel1": "#fff394",
     "lightlevel2": "#ffd500",
 }
 
-PIR_PIN = 12
-BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
-light = {"lightlevel": None}
+PIR_PIN = 12 # Set PIR pin
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather" # Set base URL for weather API
+light = {"lightlevel": None} # Set initial light level to None
 gpio_lock = Lock()  # Add thread-safe lock for GPIO operations
 
 # Read API key
@@ -54,8 +54,8 @@ def get_weather_data(city):
     """Fetch weather data and determine light level needed"""
     try:
         params = {"q": city, "appid": API_KEY, "units": "metric"}
-        response = requests.get(BASE_URL, params=params)
-        response.raise_for_status()
+        response = requests.get(BASE_URL, params=params) # Send GET request
+        response.raise_for_status() # Raise exception if status is not 200
         
         data = response.json() # Get JSON data 
         main = data.get('main', {}) # Get main data
@@ -74,20 +74,20 @@ def get_weather_data(city):
                 if weather_description == "Clear":
                     return "waitfor1", True
                 elif weather_description in ["Rain", "Thunderstorm"]:
-                    return "waitfor2", False
+                    return "waitfor2", True
                 else:  # Cloudy, Snow, or Mist
-                    return "waitfor1", True
+                    return "waitfor1", True # Return waitfor1 and True for light level 1 
             else:  # Danger zone
-                if weather_description in ["Thunderstorm", "Rain", "Mist", "Snow"]:
-                    return "lightis2", False
-                else:
-                    return "waitfor2", False
-        else:  # Day time
-            if weather_description == "Clear":
-                return "lightis0", True
-            elif weather_description in ["Thunderstorm", "Snow"]:
-                return "lightis2", False
-            else:
+                if weather_description in ["Thunderstorm", "Rain", "Mist", "Snow"]: # if weather is thunderstorm, rain, mist or snow return lightis2 which means, light is always bright
+                    return "lightis2", False # set light to bright yellow, motion is not needed
+                else:  # else return waitfor2, which means we will wait for motion to set light level 2 otherwise light level 1
+                    return "waitfor2", True # set light level to 1 and wait for motion to set light level 2
+        else:  # Day time 
+            if weather_description == "Clear": # if weather is clear
+                return "lightis0", False # return lightis0
+            elif weather_description in ["Thunderstorm", "Snow"]: # if weather is thunderstorm or snow
+                return "lightis2", False # return lightis2
+            else: # else return waitfor2, which means we will wait for motion to set light level 2 otherwise light level 1
                 return "waitfor2", True
                 
     except requests.RequestException as e:
@@ -125,17 +125,18 @@ def pir_monitoring_loop(pir_controller):
     finally:
         pir_controller.cleanup()
 
+# Check motion for a specified time period
 def check_motion_with_timeout(pir_controller, base_level, motion_level, timeout):
     """Check motion for a specified time period"""
-    start_time = time.time()
-    light["lightlevel"] = base_level
+    start_time = time.time() 
+    light["lightlevel"] = base_level # Set light level to base level
     
-    while time.time() - start_time < timeout:
+    while time.time() - start_time < timeout: 
         for _ in range(5):  # Check motion 5 times
-            if pir_controller.read_motion():
+            if pir_controller.read_motion(): # If motion detected
                 light["lightlevel"] = motion_level
                 print("Motion detected!")
-            else:
+            else: # If no motion detected
                 light["lightlevel"] = base_level
                 print("No motion detected")
             time.sleep(1)
