@@ -1,0 +1,173 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather-Based Lighting System</title>
+    <style>
+        body {
+            transition: background-color 1s ease;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            gap: 20px;
+        }
+        .info-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .data-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-grow: 1;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .stat-group {
+            margin: 15px 0;
+        }
+        .stat-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #000;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="info-panel">
+        <h2>System Status</h2>
+        
+        <div class="stat-group">
+            <div class="stat-label">Current Weather:</div>
+            <div class="stat-value" id="weather">Loading...</div>
+        </div>
+        
+        <div class="stat-group">
+            <div class="stat-label">Current Light Level:</div>
+            <div class="stat-value">
+                <span id="color-text">Loading...</span>
+                <span class="color-box" id="color-box"></span>
+            </div>
+        </div>
+        
+        <div class="stat-group">
+            <div class="stat-label">Motion Detections Today:</div>
+            <div class="stat-value" id="today-motions">Loading...</div>
+        </div>
+        
+        <div class="stat-group">
+            <div class="stat-label">Total Motion Detections:</div>
+            <div class="stat-value" id="total-motions">Loading...</div>
+        </div>
+    </div>
+
+    <div class="data-panel">
+        <h2>Motion Detection History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Weather</th>
+                </tr>
+            </thead>
+            <tbody id="motion-data">
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString();
+        }
+
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString();
+        }
+
+        function updateStats() {
+            // Update status panel
+            fetch('/get_stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.body.style.backgroundColor = data.color;
+                    document.getElementById('weather').textContent = data.weather;
+                    document.getElementById('color-text').textContent = data.color;
+                    document.getElementById('color-box').style.backgroundColor = data.color;
+                    document.getElementById('today-motions').textContent = data.motions_today;
+                    document.getElementById('total-motions').textContent = data.motions_total;
+                })
+                .catch(error => console.error('Error:', error));
+
+            // Update motion data list
+            fetch('/get_motion_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('motion-data');
+                    tbody.innerHTML = '';
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        const dateCell = document.createElement('td');
+                        const timeCell = document.createElement('td');
+                        const weatherCell = document.createElement('td');
+                        
+                        dateCell.textContent = formatDate(item.timestamp);
+                        timeCell.textContent = formatTime(item.timestamp);
+                        weatherCell.textContent = item.weather_condition;
+                        
+                        row.appendChild(dateCell);
+                        row.appendChild(timeCell);
+                        row.appendChild(weatherCell);
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update stats every second
+        setInterval(updateStats, 1000);
+        // Initial update
+        updateStats();
+    </script>
+</body>
+</html>
