@@ -1,137 +1,173 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather & Motion Monitor</title>
+    <title>Weather-Based Lighting System</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            transition: background-color 1s ease;
             margin: 0;
             padding: 20px;
+            font-family: Arial, sans-serif;
             min-height: 100vh;
-            transition: background-color 0.5s;
+            display: flex;
+            gap: 20px;
         }
-        
-        .dashboard {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
+        .info-panel {
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
-        .title {
-            text-align: center;
-            margin-bottom: 20px;
+        .data-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-grow: 1;
+            max-height: 80vh;
+            overflow-y: auto;
         }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: auto auto;
-            gap: 10px;
-            margin-bottom: 20px;
+        .stat-group {
+            margin: 15px 0;
         }
-        
-        .info-label {
+        .stat-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #000;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.1);
             font-weight: bold;
         }
-        
-        .mock-controls {
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        
-        .button-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        button {
-            padding: 10px;
-            border: none;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        button:hover {
-            background: #0056b3;
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <h1 class="title">Weather & Motion Monitor</h1>
+    
+    <div class="info-panel">
+        <h2>System Status</h2>
         
-        <div class="info-grid">
-            <div class="info-label">Temperature:</div>
-            <div id="temperature">--</div>
-            
-            <div class="info-label">Weather:</div>
-            <div id="weather">--</div>
-            
-            <div class="info-label">Motion Detected:</div>
-            <div id="motion">No</div>
-            
-            <div class="info-label">Daily Movements:</div>
-            <div id="movement-count">0</div>
-            
-            <div class="info-label">Light Level:</div>
-            <div id="light-level">0</div>
+        <div class="stat-group">
+            <div class="stat-label">Current Weather:</div>
+            <div class="stat-value" id="weather">Loading...</div>
         </div>
         
-        <div class="mock-controls">
-            <h2>Mock Controls</h2>
-            <div class="button-grid">
-                <button onclick="mockCondition('clear-day')">Clear Day</button>
-                <button onclick="mockCondition('clear-night')">Clear Night</button>
-                <button onclick="mockCondition('rain')">Rain</button>
-                <button onclick="mockCondition('thunderstorm')">Thunderstorm</button>
-                <button onclick="mockCondition('motion')">Toggle Motion</button>
-                <button onclick="mockCondition('danger-zone')">Toggle Danger Zone</button>
+        <div class="stat-group">
+            <div class="stat-label">Current Light Level:</div>
+            <div class="stat-value">
+                <span id="color-text">Loading...</span>
+                <span class="color-box" id="color-box"></span>
             </div>
+        </div>
+        
+        <div class="stat-group">
+            <div class="stat-label">Motion Detections Today:</div>
+            <div class="stat-value" id="today-motions">Loading...</div>
+        </div>
+        
+        <div class="stat-group">
+            <div class="stat-label">Total Motion Detections:</div>
+            <div class="stat-value" id="total-motions">Loading...</div>
         </div>
     </div>
 
+    <div class="data-panel">
+        <h2>Motion Detection History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Weather</th>
+                </tr>
+            </thead>
+            <tbody id="motion-data">
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
     <script>
-        function updateDashboard() {
-            fetch('/api/current-state')
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString();
+        }
+
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString();
+        }
+
+        function updateStats() {
+            // Update status panel
+            fetch('/get_stats')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('temperature').textContent = `${data.temperature}°C`;
-                    document.getElementById('weather').textContent = data.weather_description;
-                    document.getElementById('motion').textContent = data.has_motion ? 'Yes' : 'No';
-                    document.getElementById('movement-count').textContent = data.daily_motion_count;
-                    document.getElementById('light-level').textContent = data.light_level.level;
-                    
-                    // Update background color
-                    document.body.style.backgroundColor = data.light_level.color;
+                    document.body.style.backgroundColor = data.color;
+                    document.getElementById('weather').textContent = data.weather;
+                    document.getElementById('color-text').textContent = data.color;
+                    document.getElementById('color-box').style.backgroundColor = data.color;
+                    document.getElementById('today-motions').textContent = data.motions_today;
+                    document.getElementById('total-motions').textContent = data.motions_total;
+                })
+                .catch(error => console.error('Error:', error));
+
+            // Update motion data list
+            fetch('/get_motion_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('motion-data');
+                    tbody.innerHTML = '';
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        const dateCell = document.createElement('td');
+                        const timeCell = document.createElement('td');
+                        const weatherCell = document.createElement('td');
+                        
+                        dateCell.textContent = formatDate(item.timestamp);
+                        timeCell.textContent = formatTime(item.timestamp);
+                        weatherCell.textContent = item.weather_condition;
+                        
+                        row.appendChild(dateCell);
+                        row.appendChild(timeCell);
+                        row.appendChild(weatherCell);
+                        tbody.appendChild(row);
+                    });
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-        function mockCondition(condition) {
-            fetch('/api/mock', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ condition: condition })
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateDashboard(); // Refresh the display after mocking
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        // Update dashboard every 5 seconds
-        updateDashboard();
-        setInterval(updateDashboard, 5000);
+        // Update stats every second
+        setInterval(updateStats, 1000);
+        // Initial update
+        updateStats();
     </script>
 </body>
 </html>

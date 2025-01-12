@@ -1,37 +1,37 @@
-from flask import Flask, render_template, jsonify, request
-import threading
-import time
-from datetime import datetime
-import RPi.GPIO as GPIO
-from threading import Lock
+from flask import Flask, render_template, jsonify, request  # Import necessary Flask modules
+import threading  # Import threading module
+import time  # Import time module
+from datetime import datetime  # Import datetime module
+import RPi.GPIO as GPIO  # Import GPIO module for Raspberry Pi
+from threading import Lock  # Import Lock from threading module
 
-app = Flask(__name__)
+app = Flask(__name__)  # Create a Flask application instance
 
 # Global variables
-lights = {
+lights = {  # Dictionary to store light levels and their corresponding colors
     "lightlevel0": "#cccccc",
     "lightlevel1": "#fff394",
     "lightlevel2": "#ffd500",
 }
 
-PIR_PIN = 12
-light = {"lightlevel": lights["lightlevel0"]}
-gpio_lock = Lock()
+PIR_PIN = 12  # GPIO pin number for PIR sensor
+light = {"lightlevel": lights["lightlevel0"]}  # Initial light level
+gpio_lock = Lock()  # Create a lock for GPIO access
 
 # Test scenario configurations
-current_scenario = {
+current_scenario = {  # Dictionary to store the current test scenario
     "weather": "Clear",
     "is_day": True,
     "is_danger_zone": False
 }
 
-class MockWeatherResponse:
-    def __init__(self, weather, is_day, is_danger_zone):
+class MockWeatherResponse:  # Class to mock weather response
+    def __init__(self, weather, is_day, is_danger_zone):  # Initialize with weather, day status, and danger zone status
         self.weather = weather
         self.is_day = is_day
         self.is_danger_zone = is_danger_zone
 
-    def get_status(self):
+    def get_status(self):  # Method to get the status based on weather conditions
         if not self.is_day:  # Night time
             if not self.is_danger_zone:
                 if self.weather == "Clear":
@@ -53,7 +53,7 @@ class MockWeatherResponse:
             else:
                 return "waitfor2", True
 
-SCENARIO_CONFIGS = {
+SCENARIO_CONFIGS = {  # Dictionary to store different scenario configurations
     "day_clear": {"weather": "Clear", "is_day": True, "is_danger_zone": False},
     "day_rain": {"weather": "Rain", "is_day": True, "is_danger_zone": False},
     "day_thunder": {"weather": "Thunderstorm", "is_day": True, "is_danger_zone": False},
@@ -64,8 +64,7 @@ SCENARIO_CONFIGS = {
     "night_cloudy": {"weather": "Clouds", "is_day": False, "is_danger_zone": False}
 }
 
-def get_weather_status():
-    """Get weather status based on current test scenario"""
+def get_weather_status():  # Function to get weather status based on current test scenario
     mock_weather = MockWeatherResponse(
         current_scenario["weather"],
         current_scenario["is_day"],
@@ -73,8 +72,7 @@ def get_weather_status():
     )
     return mock_weather.get_status()
 
-def update_light_status():
-    """Update light status based on current weather and motion"""
+def update_light_status():  # Function to update light status based on current weather and motion
     weather_status, _ = get_weather_status()
     
     if weather_status == "lightis2":
@@ -88,7 +86,7 @@ def update_light_status():
         # Default to level 1, motion will trigger level 2
         light["lightlevel"] = lights["lightlevel1"]
 
-@app.route("/set-scenario", methods=["POST"])
+@app.route("/set-scenario", methods=["POST"])  # Route to set the scenario
 def set_scenario():
     scenario = request.json.get("scenario")
     if scenario in SCENARIO_CONFIGS:
@@ -102,10 +100,10 @@ def set_scenario():
         })
     return jsonify({"error": "Invalid scenario"}), 400
 
-@app.route("/trigger-motion", methods=["POST"])
+@app.route("/trigger-motion", methods=["POST"])  # Route to trigger motion
 def trigger_motion():
     weather_status, _ = get_weather_status()
-    
+    # Update light status based on weather and motion
     if weather_status == "waitfor1":
         light["lightlevel"] = lights["lightlevel1"]
         message = "Motion detected - Light set to level 1"
@@ -117,13 +115,13 @@ def trigger_motion():
     
     return jsonify({"message": message})
 
-@app.route("/light-status")
+@app.route("/light-status")  # Route to get the current light status
 def light_status():
     return jsonify(light)
 
-@app.route("/")
+@app.route("/")  # Route to render the index page
 def index():
     return render_template("index.html")
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # Main block to run the Flask application
     app.run(host='0.0.0.0', port=8080, debug=False)
