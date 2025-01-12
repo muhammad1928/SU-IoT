@@ -50,6 +50,7 @@ class PIRController:
             return GPIO.input(self.pin)
 
 def get_weather_data(city):
+    global weather_description
     """Fetch weather data and determine light level needed"""
     try:
         params = {"q": city, "appid": API_KEY, "units": "metric"}
@@ -156,7 +157,7 @@ def start_monitoring():
 
 @app.route("/light-status")
 def light_status():
-    return jsonify(light)
+    return jsonify(light,weather_description)
 
 @app.route("/")
 def index():

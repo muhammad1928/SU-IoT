@@ -32,6 +32,11 @@
             font-size: 1.2rem;
             margin-top: 1rem;
         }
+        .weather-text {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +44,7 @@
         <h1>Light Status Monitor</h1>
         <div class="light-indicator" id="lightIndicator"></div>
         <div class="status-text" id="statusText"></div>
+        <div class="weather-text" id="weatherText"></div>
     </div>
 
     <script>
@@ -46,28 +52,35 @@
             fetch('/light-status')
                 .then(response => response.json())
                 .then(data => {
+                    const lightData = data[0];  // First element contains light data
+                    const weatherDesc = data[1];  // Second element contains weather description
                     const indicator = document.getElementById('lightIndicator');
                     const statusText = document.getElementById('statusText');
+                    const weatherText = document.getElementById('weatherText');
                     
-                    if (data.lightlevel) {
-                        indicator.style.backgroundColor = data.lightlevel;
+                    if (lightData.lightlevel) {
+                        indicator.style.backgroundColor = lightData.lightlevel;
                         
                         // Set status text based on light level
-                        if (data.lightlevel === '#cccccc') {
+                        if (lightData.lightlevel === '#cccccc') {
                             statusText.textContent = 'Lights Off (Level 0)';
-                        } else if (data.lightlevel === '#fff394') {
+                        } else if (lightData.lightlevel === '#fff394') {
                             statusText.textContent = 'Light Level 1';
-                        } else if (data.lightlevel === '#ffd500') {
+                        } else if (lightData.lightlevel === '#ffd500') {
                             statusText.textContent = 'Light Level 2';
                         }
                     } else {
                         indicator.style.backgroundColor = '#cccccc';
                         statusText.textContent = 'Status: Unknown';
                     }
+
+                    // Add weather description
+                    weatherText.textContent = `Weather: ${weatherDesc || 'Unknown'}`;
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     document.getElementById('statusText').textContent = 'Error fetching status';
+                    document.getElementById('weatherText').textContent = 'Weather: Unable to fetch';
                 });
         }
 

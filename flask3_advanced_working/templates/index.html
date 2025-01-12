@@ -36,11 +36,23 @@
             margin-top: 1rem;
             text-align: center;
         }
-        .scenario-grid {
+        .scenario-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .scenario-group {
+            flex: 1;
+        }
+        .scenario-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .scenario-buttons {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 10px;
-            margin-top: 20px;
         }
         .btn {
             padding: 10px;
@@ -50,6 +62,8 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 1rem;
+            text-align: center;
         }
         .btn:hover {
             background-color: #0056b3;
@@ -60,6 +74,7 @@
             padding: 15px;
             margin-top: 20px;
             font-size: 1.1em;
+            text-align: center;
         }
         .motion-btn:hover {
             background-color: #218838;
@@ -69,54 +84,43 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .scenario-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .log-panel {
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        .log-entry {
-            margin: 5px 0;
-            padding: 5px;
-            border-bottom: 1px solid #dee2e6;
-        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Light Status Panel -->
         <div class="panel">
             <h2>Light Status</h2>
             <div class="light-indicator" id="lightIndicator"></div>
             <div class="status-text" id="statusText"></div>
-            <button class="btn motion-btn" id="triggerMotion">Trigger Motion Sensor</button>
+            <button class="motion-btn" id="triggerMotion">Trigger Motion Sensor</button>
         </div>
-        
+
+        <!-- Test Scenarios Panel -->
         <div class="panel">
             <h2>Test Scenarios</h2>
-            <div class="scenario-grid">
-                <div>
+            <div class="scenario-container">
+                <!-- Daytime Scenarios -->
+                <div class="scenario-group">
                     <div class="scenario-title">Daytime Scenarios</div>
-                    <button class="btn" onclick="setScenario('day_clear')">Clear Day</button>
-                    <button class="btn" onclick="setScenario('day_rain')">Rainy Day</button>
-                    <button class="btn" onclick="setScenario('day_thunder')">Thunderstorm Day</button>
-                    <button class="btn" onclick="setScenario('day_cloudy')">Cloudy Day</button>
+                    <div class="scenario-buttons">
+                        <button class="btn scenario-btn" onclick="setScenario('day_clear')">Clear Day</button>
+                        <button class="btn scenario-btn" onclick="setScenario('day_rain')">Rainy Day</button>
+                        <button class="btn scenario-btn" onclick="setScenario('day_thunder')">Thunderstorm Day</button>
+                        <button class="btn scenario-btn" onclick="setScenario('day_cloudy')">Cloudy Day</button>
+                    </div>
                 </div>
-                <div>
+
+                <!-- Nighttime Scenarios -->
+                <div class="scenario-group">
                     <div class="scenario-title">Nighttime Scenarios</div>
-                    <button class="btn" onclick="setScenario('night_clear')">Clear Night</button>
-                    <button class="btn" onclick="setScenario('night_rain')">Rainy Night</button>
-                    <button class="btn" onclick="setScenario('night_thunder')">Thunderstorm Night</button>
-                    <button class="btn" onclick="setScenario('night_cloudy')">Cloudy Night</button>
+                    <div class="scenario-buttons">
+                        <button class="btn scenario-btn" onclick="setScenario('night_clear')">Clear Night</button>
+                        <button class="btn scenario-btn" onclick="setScenario('night_rain')">Rainy Night</button>
+                        <button class="btn scenario-btn" onclick="setScenario('night_thunder')">Thunderstorm Night</button>
+                        <button class="btn scenario-btn" onclick="setScenario('night_cloudy')">Cloudy Night</button>
+                    </div>
                 </div>
-            </div>
-            <div class="log-panel" id="logPanel">
-                <div class="log-entry">System ready. Select a scenario to begin testing...</div>
             </div>
         </div>
     </div>
